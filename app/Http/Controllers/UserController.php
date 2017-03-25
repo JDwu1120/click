@@ -18,6 +18,7 @@ class UserController extends Controller
      * 检查登录
      */
     public static function checkLog(Request $request){
+        dd("haha");
         UserService::getLogin();
     }
     /*
