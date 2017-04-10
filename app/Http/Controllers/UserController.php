@@ -9,88 +9,160 @@
 namespace App\Http\Controllers;
 
 
+use App\dto\Operate;
+use App\Service\Imploment\ArticleService;
 use App\Service\Imploment\UserService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /*
-     * 检查登录
+
+    /**
+     * UserController constructor.
      */
-    public static function checkLog(Request $request){
-        dd("haha");
-        UserService::getLogin();
+    public $usr;
+    public $art;
+    public function __construct()
+    {
+        $this->usr=new UserService();
+        $this->art=new ArticleService();
     }
     /*
-     * 浏览文章
+     * 添加文章
      */
-    public static function viewArticle(Request $request)
+    public function addArticle(Request $request)
     {
+        $ArticleInfo = [
+            'title' => $request->input('title'),
+            'category' => $request->input('category'),
+            'article' => $request->input('article'),
+            'userName' => $request->input('userName'),
+            'tag' =>   $request->input('tag'),
+            'power' =>  $request->input('power'),
+        ];
+        $data = $this->usr->addArticle($ArticleInfo);
+        $msg = new Operate(true,'',1,$data);
+        return json_encode($msg);
+    }
+    /*
+     * 添加图片
+     */
+    public function articleImg(Request $request)
+    {
+        $arr = [
+            "userName" => $request->input('userName'),
+            "original" => $request->input('original'),
+            "size"     => $request->input('size'),
+            "type"     => $request->input('type'),
+            "url"      => $request->input('url')
+        ];
+        $data = $this->art->articleImg($arr);
+        $msg = new Operate(true,'',1,$data);
+        return json_encode($msg);
+    }
+    /*
+     * 删除文章
+     */
+    public function delArticle(Request $request){
         $id = $request->input('id');
-        $userName = $request->input('userName');
-        $res = UserService::viewArticle($id);
-        return json_encode($res);
+        $data = $this->art->delArticle($id);
+        $msg = new Operate(true,'',1,$data);
+        return json_encode($msg);
+    }
+    /*
+     * 修改指定文章
+     */
+    public function editArticle(Request $request){
+        $id = $request->input('id');
+        $ArticleInfo = [
+            'title' => $request->input('title'),
+            'content' => $request->input('content'),
+            'category' => $request->input('category'),
+            'tag' => $request->input('tag'),
+        ];
+        $data = $this->art->editAticle($id,$ArticleInfo);
+        $msg = new Operate(true,'',1,$data);
+        return json_encode($msg);
     }
     /*
      * 收藏文章
      */
-    public static function colArticle(Request $request)
+    public function colArticle(Request $request)
     {
         $id = $request->input('id');
         $userName = $request->input('userName');
-        $res = UserService::colArticle($id,$userName);
-        return json_encode($res);
+        $res = $this->usr->colArticle($id,$userName);
+        $msg = new Operate(true,'',1,$res);
+        return json_encode($msg);
     }
     /*
      * 收藏列表
      */
-    public static function collectionList(Request $request)
+    public function collectionList(Request $request)
     {
         $userName = $request->input('userName');
-        $res = UserService::collectionList($userName);
-        return json_encode($res);
+        $res = $this->usr->collectionList($userName);
+        $msg = new Operate(true,'',1,$res);
+        return json_encode($msg);
     }
     /*
      * 检查文章是否被收藏过
      */
-    public static function isCollection(Request $request)
+    public function isCollection(Request $request)
     {
         $id = $request->input('id');
         $userName = $request->input('userName');
-        $res = UserService::isCollection($id,$userName);
-        return json_encode($res);
+        $res = $this->usr->isCollection($id,$userName);
+        $msg = new Operate(true,'',1,$res);
+        return json_encode($msg);
     }
     /*
      * 删除收藏
      */
-    public static function delCollection(Request $request)
+    public function delCollection(Request $request)
     {
        $id = $request->input('id');
        $userName = $request->input('userName');
-       $res = UserService::delCollection($id,$userName);
-        return json_encode($res);
+       $res = $this->usr->delCollection($id,$userName);
+       $msg = new Operate(true,'',1,$res);
+       return json_encode($msg);
     }
-    /*
+    /*x
      * 评论留言
      */
-    public static function comment(Request $request)
+    public function comment(Request $request)
     {
         $aid = $request->input('aid');
         $userName = $request->input('userName');
         $comment = $request->input('content');
         $power = $request->input('power');
-        $res = UserService::comment($aid,$userName,$comment,$power);
-        return json_encode($res);
+        $res = $this->usr->comment($aid,$userName,$comment,$power);
+        $msg = new Operate(true,'',1,$res);
+        return json_encode($msg);
     }
     /*
      * 删除留言评论
      */
-    public static function delComment(Request $request)
+    public function delComment(Request $request)
     {
         $id = $request->input('id');
         $aid = $request->input('aid');
         $userName = $request->input('userName');
-        $res = UserService::delComment($id,$aid,$userName);
-        return json_encode($res);
+        $res = $this->usr->delComment($id,$aid,$userName);
+        $msg = new Operate(true,'',1,$res);
+        return json_encode($msg);
+    }
+    /*
+     * 获取用户信息
+     */
+    public function getInfo(Request $request){
+        $token = $request->input('token');
+        $info = $this->usr->getInfo($token);
+        if ($info){
+            $msg = new Operate(true,'',1,$info);
+        }else{
+            $msg = new Operate(true,'',0,$info);
+        }
+        return json_encode($msg);
     }
 }

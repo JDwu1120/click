@@ -11,34 +11,30 @@ namespace App\Service;
 
 interface ArticleInterface
 {
-    /*
-     * 存入用户发表的文章
-     */
-   public static function addArticle($text);
    /*
     * 保存用户传入的图片
     */
-   public static function articleImg($arr);
+   public function articleImg($arr);
    /*
     * 显示所有的文章
     */
-   public static function showArticle();
+   public function showArticle($page);
    /*
     * 显示指定文章
     */
-   public static function showOneArticle($id);
+   public function showOneArticle($id);
    /*
     * 删除指定文章
     */
-   public static function delArticle($id);
+   public function delArticle($id);
    /*
     * 修改指定文章
     */
-   public static function editAticle($id,$content);
+   public function editAticle($id,$content);
    /*
     * 查询文章
     */
-   public static function queryAticle($title);
+   public function queryArticle($title);
    /*
     * 推荐文章
     */
@@ -55,4 +51,8 @@ interface ArticleInterface
     * 显示分类
     */
    public function showCategory();
+   /*
+    * 显示某一类文章
+    */
+   public function showOneCategory($category,$page);
 }

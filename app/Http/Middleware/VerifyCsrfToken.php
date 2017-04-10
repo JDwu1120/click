@@ -14,6 +14,20 @@ class VerifyCsrfToken extends BaseVerifier
     protected $except = [
         //
         'article',
-        'article/*'
+        'article/*',
+        'homepage',
+        'getToken',
+        'getInfo',
+        'getLogin',
+        'getToken',
+        'addArticle',
+        'showOneArticle',
+        'showArticle',
+        'showOneTag',
+        'showOneCategory',
+        'verifySend',
+        'userRegister',
+        'userLogin',
+        'viewArticle'
     ];
 }

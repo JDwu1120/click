@@ -18,11 +18,7 @@ class CreateArticlesTable extends Migration
             $table->text('article');
             $table->string('userName');
             $table->string('category');
-            $table->string('tag1',20)->default(null);
-            $table->string('tag2',20)->default(null);
-            $table->string('tag3',20)->default(null);
-            $table->string('tag4',20)->default(null);
-            $table->string('tag5',20)->default(null);
+            $table->string('tag',255)->default('biology');
             $table->integer('views')->default(0);
             $table->integer('collections')->default(0);
             $table->integer('comnments')->default(0);

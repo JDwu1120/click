@@ -10,118 +10,77 @@ namespace App\Service\Imploment;
 use App\dto\Operate;
 use App\Models\Article;
 use App\Repositories\ArticleRepository;
+use App\Repositories\UserRepository;
 use App\Service\ArticleInterface;
 
 class ArticleService implements ArticleInterface
 {
-    public static function addArticle($arr)
+    public $art;
+    public $usr;
+    /**
+     * ArticleService constructor.
+     */
+    public function __construct()
     {
-        // TODO: Implement addArticle() method.
-        //写入文章
-        if (UserService::checkLog()) {
-            $arr1 = [
-                'title' => 'test',
-                'article' => $arr['article'],
-                'userName' => 'admina0pppq',
-                'tag1' => 'test1',
-                'tag2' => 'test2',
-                'tag3' => 'test3',
-                'tag4' => 'test4',
-                'tag5' => 'test5',
-                'power'=> $arr['power'],
-            ];
-            $res = ArticleRepository::addArticle($arr1);
-            if ($res){
-                $mes = new Operate(true,1001,$res);
-            }else{
-                $mes = new Operate(false,1003,'保存失败!');
-            }
-        }else{
-            $mes = new Operate(false,1002,'请先登录!');
-        }
-        return $mes;
+        $this->art=new ArticleRepository();
+        $this->usr=new UserRepository();
     }
     /*
      * 文章图片储存
      */
-    public static function articleImg($arr)
+    public function articleImg($arr)
     {
-        // TODO: Implement articleImg() method.
-        if (UserService::checkLog()){
             $res = ArticleRepository::articleImg($arr);
             if ($res){
-                $mes = new Operate(true,1001,$res);
+                $mes = "保存成功";
             }else{
-                $mes = new Operate(false,1003,'保存失败');
+                $mes = "保存失败";
             }
-        }else{
-            $mes = new Operate(false,1002,'请先登录！');
-        }
         return json_encode($mes);
     }
     /*
      * 显示所有文章
      */
-    public static function showArticle()
+    public function showArticle($page)
     {
         // TODO: Implement showArticle() method.
-        if (UserService::checkLog()){
-            $data = ArticleRepository::showArticle();
-            $mes = new Operate(true,1001,$data);
-        }else{
-            $mes = new Operate(false,1002,'请先登录！');
-        }
-        return $mes;
+        $data = ArticleRepository::showArticle($page);
+        return $data;
     }
     /*
      * 显示指定文章
      */
-    public static function showOneArticle($id)
+    public function showOneArticle($id)
     {
-        if (UserService::checkLog()){
-            $mes = new Operate(true,1001,ArticleRepository::showOneArticle($id));
-        }else{
-            $mes = new Operate(false,1002,'请先登录！');
-        }
+        $mes = ArticleRepository::showOneArticle($id);
+        ArticleRepository::viewArticle($id);
         return $mes;
     }
     /*
      * 删除指定文章
      */
-    public static function delArticle($id)
+    public function delArticle($id)
     {
         // TODO: Implement delArticle() method.
-        if (UserService::checkLog()){
-            $mes = new Operate(true,1001,ArticleRepository::delArticle($id));
-        }else{
-            $mes = new Operate(false,1002,'请先登录！');
-        }
+        $mes = ArticleRepository::delArticle($id);
         return $mes;
     }
     /*
      * 修改指定文章
      */
-    public static function editAticle($id,$content)
+    public function editAticle($id,$content)
     {
         // TODO: Implement editAticle() method.
-        if (UserService::checkLog()){
-            $mes = new Operate(true,1001,ArticleRepository::editArticle($id,$content));
-        }else{
-            $mes = new Operate(false,1002,'请先登录！');
-        }
+        $mes = ArticleRepository::editArticle($id,$content);
         return $mes;
     }
     /*
      * 查询文章
      */
-    public static function queryAticle($title)
+    public function queryArticle($title)
     {
         // TODO: Implement queryAticle() method.
-        if (UserService::checkLog()){
-            $mes = new Operate(true,1001,ArticleRepository::queryArticle($title));
-        }else{
-            $mes = new Operate(false,1002,'请先登录！');
-        }
+        $mes = ArticleRepository::queryArticle($title);
         return $mes;
     }
     /*
@@ -130,12 +89,7 @@ class ArticleService implements ArticleInterface
     public function featureArticle()
     {
         // TODO: Implement featureArticle() method.
-        $art = new ArticleRepository();
-        if (UserService::checkLog()){
-            $mes = new Operate(true,1001,$art->featureArticle());
-        }else{
-            $mes = new Operate(false,1002,'请先登录！');
-        }
+        $mes = $this->art->featureArticle();
         return $mes;
     }
     /*
@@ -144,12 +98,7 @@ class ArticleService implements ArticleInterface
     public function latestArticle()
     {
         // TODO: Implement featureArticle() method.
-        $art = new ArticleRepository();
-        if (UserService::checkLog()){
-            $mes = new Operate(true,1001,$art->latestArticle());
-        }else{
-            $mes = new Operate(false,1002,'请先登录！');
-        }
+        $mes = $this->art->latestArticle();
         return $mes;
     }
     /*
@@ -158,10 +107,8 @@ class ArticleService implements ArticleInterface
     public function showTag()
     {
         // TODO: Implement showTag() method.
-        $art = new ArticleRepository();
-        $data = $art->showTag();
-        $mes = new Operate(true,1001,$data);
-        return $mes;
+        $data = $this->art->showTag();
+        return $data;
     }
     /*
      * 分类显示
@@ -169,9 +116,26 @@ class ArticleService implements ArticleInterface
     public function showCategory()
     {
         // TODO: Implement showCategory() method.
-        $art = new ArticleRepository();
-        $data = $art->showCategory();
-        $mes = new Operate(true,1001,$data);
-        return $mes;
+        $data = $this->art->showCategory();
+        return $data;
+    }
+    /*
+     * 显示某一类的所有文章
+     */
+    public function showOneCategory($category,$page){
+        $data = $this->art->showOneCategory($category,$page);
+        return $data;
+    }
+    /*
+     * 按标签显示一类文章
+     */
+    public function showOneTag($tag,$page){
+        $data = $this->art->showOneTag($tag,$page);
+        return $data;
+    }
+    //显示一个文章的前30个字
+    public function brief($id){
+        $data = $this->art->brief($id);
+        return $data;
     }
 }

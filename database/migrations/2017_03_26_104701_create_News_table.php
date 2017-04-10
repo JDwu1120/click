@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateCollectionsTable extends Migration
+class CreateNewsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,10 +12,11 @@ class CreateCollectionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('collections', function (Blueprint $table) {
+        Schema::create('News', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('userName');
-            $table->integer('aid');
+            $table->string('admin');
+            $table->string('title',32);
+            $table->text('message');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ class CreateCollectionsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('collections');
+        Schema::drop('News');
     }
 }

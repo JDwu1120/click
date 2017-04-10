@@ -7,123 +7,129 @@
  */
 
 namespace App\Http\Controllers;
-use App\Repositories\ArticleRepository;
+use App\dto\Operate;
+use App\Service\Imploment\AdminService;
+use App\Service\Imploment\LoginService;
 use App\Service\Imploment\ArticleService;
 use Illuminate\Http\Request;
-
+use App\Service\Imploment\UserService;
 class ArticleController extends Controller
 {
-    /*
-     * 添加文章
-     */
-    public function addArticle(Request $request)
+    private $log;
+    private $art;
+    private $user;
+    public function __construct()
     {
-        $ArticleInfo = [
-            'title' => $request->input('title'),
-            'article' => $request->input('article'),
-            'userName' => $request->input('userName'),
-            'tag1' => $request->input('tag1'),
-            'tag2' => $request->input('tag2'),
-            'tag3' => $request->input('tag3'),
-            'tag4' => $request->input('tag4'),
-            'tag5' => $request->input('tag5'),
-            'power' => $request->input('power'),
-        ];
-        $data = ArticleService::addArticle($ArticleInfo);
-        return json_encode($data);
-    }
-    /*
-     * 添加图片
-     */
-    public function articleImg(Request $request)
-    {
-        $arr = [
-            "userName" => $request->input('userName'),
-            "original" => $request->input('original'),
-            "size"     => $request->input('size'),
-            "type"     => $request->input('type'),
-            "url"      => $request->input('url')
-        ];
-        $data = ArticleService::articleImg($arr);
-        return json_encode($data);
+        $this->log = new LoginService();
+        $this->art = new ArticleService();
+        $this->user = new UserService();
     }
     /*
      * 显示所有文章
      */
-    public function showArticle(){
-        $data = ArticleService::showArticle();
-        echo json_encode($data);
+    public function showArticle(Request $request){
+        $token = $request->input('token');
+        $page = $request->input('page');
+        $data = $this->art->showArticle($page);
+        $log = $this->log->checkLog($token);
+        if ($log){
+            $data['userInfo'] = $this->user->getInfo($token);
+        }
+        $mes = new Operate(true,'',$log,$data);
+        echo json_encode($mes);
     }
     /*
      * 显示某个文章
      */
     public function showOneArticle(Request $request){
-        $data = ArticleService::showOneArticle($request->input('id'));
-        return json_encode($data);
-    }
-    /*
-     * 删除文章
-     */
-    public function delArticle(Request $request){
-        $data = ArticleService::delArticle($request->input('id'));
-        return json_encode($data);
-    }
-    /*
-     * 修改指定文章
-     */
-    public function editArticle(Request $request){
-        $id = $request->input('id');
-        $ArticleInfo = [
-            'title' => $request->input('title'),
-            'content' => $request->input('content'),
-            'category' => $request->input('category'),
-            'tag1' => $request->input('tag1'),
-            'tag2' => $request->input('tag2'),
-            'tag3' => $request->input('tag3'),
-            'tag4' => $request->input('tag4'),
-            'tag5' => $request->input('tag5'),
-        ];
-        $data = ArticleService::editAticle($id,$ArticleInfo);
-        return json_encode($data);
+        $token = $request->input('token');
+        $data = $this->art->showOneArticle($request->input('id'));
+        $log = $this->log->checkLog($token);
+        if ($log){
+            $data['userInfo'] = $this->user->getInfo($token);
+        }
+        $msg = new Operate(true,'',$log,$data);
+        return json_encode($msg);
     }
     /*
      * 查询文章
      */
     public function queryArticle(Request $request){
         $title = $request->input('title');
-        $data = ArticleService::queryAticle($title);
+        $token = $request->input('token');
+        $msg = $this->art->queryArticle($title);
+        $log = $this->log->checkLog($token);
+        if ($log){
+            $msg['userInfo'] = $this->user->getInfo($token);
+        }
+        $data = new Operate(true,'',$log,$msg);
         return json_encode($data);
     }
     /*
+     * 主页信息
      * 推荐文章
-     */
-    public function featureArticle(){
-        $art = new ArticleService();
-        $data = $art->featureArticle();
-        return json_encode($data);
-    }
-    /*
      * 最新文章
-     */
-    public function latestArticle(){
-        $art = new ArticleService();
-        $data = $art->latestArticle();
-        return json_encode($data);
-    }
-    /*
      * 标签显示
-     */
-    public function showTag(){
-        $art = new ArticleService();
-        $data = $art->showTag();
-        return json_encode($data);
-    }
-    /*
      * 分类显示
      */
-    public function showCategory(){
-        $art = new ArticleService();
-        $data = $art->showCategory();
-        return json_encode($data);
+    public function homepage(Request $request){
+        $token = $request->input('token');
+        $data['featureArticle'] = $this->art->featureArticle();
+        $data['latestArticle'] = $this->art->latestArticle();
+        $data['tag'] = $this->art->showTag();
+        $data['category'] = $this->art->showCategory();
+        $data['news'] = AdminService::showNews();
+        $log = $this->log->checkLog($token);
+        if ($log){
+            $data['userInfo'] = $this->user->getInfo($token);
+        }
+        $msg = new Operate(true,'',$log,$data);
+        return json_encode($msg);
+    }
+    /*
+     * 浏览文章
+     */
+    public function viewArticle(Request $request)
+    {
+        $id = $request->input('id');
+        $token  = $request->input('token');
+        $user = new UserService();
+        $res = $user->viewArticle($id);
+        $log = $this->log->checkLog($token);
+        if ($log){
+            $res['userInfo'] = $this->user->getInfo($token);
+        }
+        $msg = new Operate(true,'success',$log,$res);
+        return json_encode($msg);
+    }
+    /*
+     * 按分类显示一类文章
+     */
+    public function showOneCategory(Request $request){
+        $category = $request->input('category');
+        $page = $request->input('page');
+        $token  = $request->input('token');
+        $res = $this->art->showOneCategory($category,$page);
+        $log = $this->log->checkLog($token);
+        if ($log){
+            $res['userInfo'] = $this->user->getInfo($token);
+        }
+        $msg = new Operate(true,'',$log,$res);
+        return json_encode($msg);
+    }
+    /*
+     * 按标签显示一类文章
+     */
+    public function showOneTag(Request $request){
+        $tag = $request->input('tag');
+        $page = $request->input('page');
+        $token  = $request->input('token');
+        $res = $this->art->showOneTag($tag,$page);
+        $log = $this->log->checkLog($token);
+        if ($log){
+            $res['userInfo'] = $this->user->getInfo($token);
+        }
+        $msg = new Operate(true,'',$log,$res);
+        return json_encode($msg);
     }
 }

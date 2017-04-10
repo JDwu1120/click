@@ -11,42 +11,40 @@ use App\Models\Article;
 use App\Models\Comment;
 use App\Models\Img;
 use App\Models\Collection;
+use Illuminate\Support\Facades\DB;
+
 class ArticleRepository
 {
     /*
-     * 储存文章
+     * 发表文章
      */
-    public static function addArticle($arr)
-    {
+    public static function addArticle($arr){
         if(empty($arr['power'])) $arr['power']='public';
+        if(empty($arr['category'])) $arr['category']='science';
+        if(empty($arr['tag'])) $arr['tag']='biology';
         $is = Article::where([
-                'title'=>$arr['title'],
-                'userName'=>$arr['userName'],
-                'category'=>$arr['category'],
-                'article' => $arr['article'],
-                'tag1' =>$arr['tag1'],
-                'tag2' =>$arr['tag2'],
-                'tag3' =>$arr['tag3'],
-                'tag4' =>$arr['tag4'],
-                'tag5' =>$arr['tag5'],
-                'power'=>$arr['power'],
+            'title'=>$arr['title'],
+            'userName'=>$arr['userName'],
+            'category'=>$arr['category'],
+            'article' => $arr['article'],
+            'tag' =>$arr['tag'],
+            'power'=>$arr['power'],
         ])->get()->toArray();
         if (empty($is)) {
-            $res = Article::create(['title' => $arr['title'],
+            $res = Article::create(
+                ['title' => $arr['title'],
                 'userName' => $arr['userName'],
-                'category'=>$arr['category'],
+                'category'=> $arr['category'],
                 'article' => $arr['article'],
-                'tag1' => $arr['tag1'],
-                'tag2' => $arr['tag2'],
-                'tag3' => $arr['tag3'],
-                'tag4' => $arr['tag4'],
-                'tag5' => $arr['tag5'],
+                'tag' => $arr['tag'],
                 'power' => $arr['power'],
             ]);
+            if ($res['incrementing']){
+                return $res['attributes']['id'];
+            }
         }else{
-            $res = '请勿发表相同文章';
+            return "请勿发表相同文章";
         }
-        return $res;
     }
     /*
      * 储存文章附带的图片
@@ -64,9 +62,20 @@ class ArticleRepository
     /*
      * 显示所有文章
      */
-    public static function showArticle(){
-        $res = Article::all()->toArray();
-        return $res;
+    public static function showArticle($page){
+        if ($page==0) $page=1;
+        $count = Article::count();
+        $pages = floor($count/10)+1;
+        $curNum=($page-1)*10;
+        $nexNum=($page)*10;
+//        $res = DB::select('select * from click_articles order by updated_at desc limit '.$curNum.','.$nexNum);
+        $res = DB::table('articles')->orderBy('updated_at','desc')->limit($curNum)->limit($nexNum)->get();
+        $data=[
+            'page'=> $page,
+            'pages' => $pages,
+            'data' => $res,
+        ];
+        return $data;
     }
     /*
      * 显示指定文章
@@ -75,7 +84,7 @@ class ArticleRepository
         $res = Article::where([
             'id' => $id
         ])->get()->toArray();
-        return $res;
+        return $res[0];
     }
     /*
      * 删除指定文章
@@ -95,11 +104,7 @@ class ArticleRepository
         ])->update([
             'title' => $content['title'],
             'Article' => $content['content'],
-            'tag1' => $content['tag1'],
-            'tag2' => $content['tag2'],
-            'tag3' => $content['tag3'],
-            'tag4' => $content['tag4'],
-            'tag5' => $content['tag5'],
+            'tag' => $content['tag'],
         ]);
         return $res;
     }
@@ -115,16 +120,19 @@ class ArticleRepository
      * 新增文章浏览量
      */
     public static function viewArticle($id){
-        $res = Article::where([
+        $num = Article::where([
             'id' => $id
         ])->increment('views',1);
-        return $res;
+        $res = Article::where([
+            'id' => $id
+        ])->get()->toArray();
+        return $res[0];
     }
     /*
      * 收藏文章
      */
     public static function colArticle($id,$userName){
-        if (Article::where('id',$id)->get()->toArray()==null)
+        if (empty(Article::where('id',$id)->get()->toArray()))
         {
             exit();
         }
@@ -166,7 +174,7 @@ class ArticleRepository
         return $res;
     }
     /*
-     * 判断文章是否呗收藏过
+     * 判断文章是否被收藏过
      */
     public static function isCollection($id,$userName)
     {
@@ -235,13 +243,18 @@ class ArticleRepository
      * 推荐文章
      */
     public function featureArticle(){
-        $res = Article::orderBy('views','desc')->limit(10)->get()->toArray();
+        $res = Article::orderBy('views','desc')->orderBy('updated_at','desc')->limit(10)->get()->toArray();
+        $res1=[];
         foreach ($res as $value) {
             $a =  explode(" ",date(DATE_RFC1123,strtotime($value['created_at'])));
             $b = $a[1]." ".$a[2].', '.$a[3];
             $res1[] = [
+                'id' => $value['id'],
                 'title' => $value['title'],
+                'userName'=> $value['userName'],
+                'views' => $value['views'],
                 'time'  => $b,
+                'collections'=>$value['collections'],
                 'category' => $value['category']
             ];
         }
@@ -251,67 +264,108 @@ class ArticleRepository
      * 最新文章
      */
     public function latestArticle(){
-        $res = Article::orderBy('created_at','desc')->limit(10)->get()->toArray();
-        $res = Article::select('tag1')->get()->toArray();
-        return $res;
+        $res = Article::orderBy('created_at','desc')->limit(30)->get()->toArray();
+        $res1=[];
+        foreach ($res as $value){
+            $a =  explode(" ",date(DATE_RFC1123,strtotime($value['created_at'])));
+            $b = $a[1]." ".$a[2].', '.$a[3];
+            $res1[] = [
+                'id' => $value['id'],
+                'title' => $value['title'],
+                'userName'=> $value['userName'],
+                'views' => $value['views'],
+                'time'  => $b,
+                'collections'=>$value['collections'],
+                'category' => $value['category']
+            ];
+        }
+        return $res1;
     }
     /*
      * 显示标签
      */
     public function showTag(){
-        $tag1 = Article::select('tag1')->get()->toArray();
-        $tag2 = Article::select('tag2')->get()->toArray();
-        $tag3 = Article::select('tag3')->get()->toArray();
-        $tag4 = Article::select('tag4')->get()->toArray();
-        $tag5 = Article::select('tag5')->get()->toArray();
-        $data = array_merge($tag1,$tag2,array_merge($tag3,array_merge($tag4,$tag5)));
-        foreach ($data as $key => $value){
-            foreach ($value as $item) {
-                $tag[] = $item;
+        $tag=Article::select('tag')->get()->toArray();
+        $res = [];
+        foreach ($tag as $value){
+            $res[] = explode(';',$value['tag']);
+        }
+        $msg = [];
+        $len = $i=count($res);
+        for($i=0;$i<$len;$i++){
+            foreach ($res[$i] as $k){
+                $msg[] = $k;
             }
         }
-        $tag = array_flip(array_flip($tag));
-        foreach ($tag as $value){
-            $res[] = $value;
-        }
-        shuffle($res);
-        if (count($res)>16){
-            $res1 = array_slice($res,0,16);
+        $msg = array_flip(array_flip($msg));
+        shuffle($msg);
+        if (count($msg)>16){
+            $res1 = array_slice($msg,0,16);
             return $res1;
         }
-        return $res;
+        return $msg;
     }
     /*
      * 分类标签
      */
     public function showCategory(){
-        $category = Article::select('category')->get()->toArray();
-        $data = [];
-        foreach ($category as $value) {
-            if (!array_key_exists($value['category'],$data)){
-                $data[$value['category']] = 1;
-            }
-            $data[$value['category']]++;
-        }
-        $cp = $data;
-        rsort($data);
-        if (count($data)>=6) {
-            $res1 = array_slice($data, 0, 6);
-            $i = 0;
-            foreach ($cp as $k => $v) {
-                if (in_array($v, $res1)) {
-                    if ($v == $res1[5] && $i != 0) {
-                        continue;
-                    }
-                    if ($v == $res1[5]) $i++;
-                    $res[] = $k;
-                }
-            }
-        }else{
-            foreach ($cp as $k => $v) {
-                $res[] = $k;
-            }
+        $res = [];
+        $category = DB::select("SELECT count(*) as num,category FROM click_articles GROUP BY category DESC limit 10");
+        foreach ($category as $k){
+            $res[] = [
+                'num' => $k->num,
+                'name' => $k->category
+            ];
         }
         return $res;
+    }
+    /*
+     * 按分类显示一类文章
+     */
+    public function showOneCategory($category,$page){
+        if ($page==0) $page=1;
+        $count = Article::where(['category'=>$category])->count();
+        $pages = floor($count/10)+1;
+        $curNum=($page-1)*10;
+        $nexNum=($page)*10;
+//        $res = DB::select('select * from click_articles where category = ? order by updated_at desc limit '.$curNum.','.$nexNum,[$category]);
+        $res = DB::table('articles')->where('category',$category)->limit($curNum)->limit($nexNum)->get();
+        $data = [
+            'pages'=>$pages,
+            'msg' => $res
+        ];
+        return $data;
+    }
+    /*
+     * 按某一种标签显示文章
+     */
+    public function showOneTag($tag,$page){
+        $tag1 = Article::where('tag','like','%'.$tag.'%')->get()->toArray();
+        if ($page==0) $page=1;
+        $count = count($tag1);
+        $pages = floor($count/10)+1;
+        $curNum=($page-1)*10;
+        $nexNum=($page)*10;
+//        $res1 = DB::select("select * from click_articles where tag like '%".htmlspecialchars($tag)."%' order by updated_at desc limit ".$curNum.",".$nexNum);
+        $res1 = DB::table('articles')->where('tag','like','%'.$tag.'%')->limit($curNum)->limit($nexNum)->get();
+        $data = [
+            'pages'=>$pages,
+            'msg' => $res1
+        ];
+        return $data;
+    }
+    //显示文章简介
+    public function brief($id){
+        $res = Article::where([
+            'id' => $id
+        ])->get()->toArray();
+        if (empty($res)){
+            return false;
+        }else{
+            foreach ($res as $k){
+                $brief = substr($k['article'],0,30);
+            }
+        }
+        return $brief;
     }
 }

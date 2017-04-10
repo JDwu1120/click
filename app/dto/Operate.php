@@ -12,18 +12,19 @@ class Operate
     public $state;
     public $message;
     public $data;
-
+    public $isLogin;
     /**
      * Operate constructor.
      * @param $state
      * @param $message
      * @param $data
      */
-    public function __construct($state, $message, $data)
+    public function __construct($state,$message,$isLogin,$data)
     {
         $this->state = $state;
         $this->message = $message;
         $this->data = $data;
+        $this->isLogin =$isLogin;
     }
 
     /**
@@ -72,6 +73,22 @@ class Operate
     public function setData($data)
     {
         $this->data = $data;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsLogin()
+    {
+        return $this->isLogin;
+    }
+
+    /**
+     * @param mixed $isLogin
+     */
+    public function setIsLogin($isLogin)
+    {
+        $this->isLogin = $isLogin;
     }
 
 }
