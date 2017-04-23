@@ -28,6 +28,7 @@ class VerifyCsrfToken extends BaseVerifier
         'verifySend',
         'userRegister',
         'userLogin',
-        'viewArticle'
+        'viewArticle',
+        'comment'
     ];
 }
