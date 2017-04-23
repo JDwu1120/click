@@ -127,17 +127,23 @@ class UserController extends Controller
        $msg = new Operate(true,'',1,$res);
        return json_encode($msg);
     }
-    /*x
+    /*
      * 评论留言
      */
     public function comment(Request $request)
     {
         $aid = $request->input('aid');
         $userName = $request->input('userName');
+        $token = $request->input('token');
         $comment = $request->input('content');
         $power = $request->input('power');
-        $res = $this->usr->comment($aid,$userName,$comment,$power);
-        $msg = new Operate(true,'',1,$res);
+        if(empty($power))$power='public';
+        $res = $this->usr->comment($aid,$userName,$comment,$power,$token);
+        if ($res){
+            $msg = new Operate(true,'',1,$res);
+        }else{
+            $msg = new Operate(false,'',1,$res);
+        }
         return json_encode($msg);
     }
     /*

@@ -27,6 +27,7 @@ class Operate
         $this->isLogin =$isLogin;
     }
 
+
     /**
      * @return mixed
      */

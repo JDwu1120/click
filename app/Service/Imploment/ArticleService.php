@@ -138,4 +138,9 @@ class ArticleService implements ArticleInterface
         $data = $this->art->brief($id);
         return $data;
     }
+    //显示评论
+    public function showComment($aid){
+        $res = $this->art->showComment($aid);
+        return $res;
+    }
 }

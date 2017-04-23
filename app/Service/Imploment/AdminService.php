@@ -29,4 +29,17 @@ class AdminService implements AdminInterface
         $news = AdminRepository::getNews();
         return $news;
     }
+    //admin检查
+    public function adminCheck($email){
+        return $this->admin->adminCheck($email);
+    }
+    //添加news
+    public function addNews($arr){
+        $mes = $this->admin->addNews($arr);
+        if ($mes){
+            return true;
+        }else{
+            return false;
+        }
+    }
 }

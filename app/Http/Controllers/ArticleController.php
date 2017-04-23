@@ -44,6 +44,10 @@ class ArticleController extends Controller
     public function showOneArticle(Request $request){
         $token = $request->input('token');
         $data = $this->art->showOneArticle($request->input('id'));
+        $data['comments'] = $this->art->showComment($request->input('id'));
+        if (!$data['comments']){
+            $data['comments']=null;
+        }
         $log = $this->log->checkLog($token);
         if ($log){
             $data['userInfo'] = $this->user->getInfo($token);
@@ -95,6 +99,10 @@ class ArticleController extends Controller
         $token  = $request->input('token');
         $user = new UserService();
         $res = $user->viewArticle($id);
+        $res['comments'] = $this->art->showComment($id);
+        if (!$res['comments']){
+            $res['comments']=array();
+        }
         $log = $this->log->checkLog($token);
         if ($log){
             $res['userInfo'] = $this->user->getInfo($token);

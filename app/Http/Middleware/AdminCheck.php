@@ -2,10 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Service\Imploment\LoginService;
+use App\dto\feedback;
+use App\dto\Operate;
+use App\Service\Imploment\AdminService;
 use Closure;
 
-class AutoCheckLogin
+class AdminCheck
 {
     /**
      * Handle an incoming request.
@@ -16,11 +18,12 @@ class AutoCheckLogin
      */
     public function handle($request, Closure $next)
     {
-        $token = $request->input('token');
-        $user = new LoginService();
-        if ($user->checkLog($token)){
+        $email = $request->input('email');
+        $admin = new AdminService();
+        if ($admin->adminCheck($email)){
             return $next($request);
+        }else{
+            return new feedback(false,'您不是管理员');
         }
-        exit('清先登录');
     }
 }

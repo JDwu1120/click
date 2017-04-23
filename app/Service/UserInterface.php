@@ -32,7 +32,7 @@ interface UserInterface
   /*
    * 评论留言
    */
-  public function comment($aid,$userName,$content,$power);
+  public function comment($aid,$userName,$content,$power,$token);
   /*
    * 删除留言评论
    */

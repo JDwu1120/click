@@ -11,10 +11,25 @@ use App\Models\Article;
 use App\Models\Comment;
 use App\Models\Img;
 use App\Models\Collection;
+use App\Models\UserInfo;
 use Illuminate\Support\Facades\DB;
 
 class ArticleRepository
 {
+    private $user;
+    private $comment;
+    private $art;
+    /**
+     * ArticleRepository constructor.
+     * @param $user
+     */
+    public function __construct()
+    {
+        $this->user = new UserInfo();
+        $this->comment = new Comment();
+        $this->art = new Article();
+    }
+
     /*
      * 发表文章
      */
@@ -206,16 +221,25 @@ class ArticleRepository
     /*
      * 留言评论
      */
-    public static function comment($aid,$userName,$content,$power)
+    public function comment($aid,$userName,$content,$power,$token)
     {
-        if (empty($power)) $power='public';
+        $username = $this->user->where([
+            'token' => $token,
+            'username' => $userName
+        ])->get()->toArray()[0];
+        if (empty($username)){
+            return false;
+        }
         $res = Comment::create([
             'aid' => $aid,
             'userName' => $userName,
             'content' => $content,
             'power'  =>  $power
         ]);
-        return $res;
+        $this->art->where([
+            'id' => $aid
+        ])->increment('comment_num',1);
+        return true;
     }
     /*
      * 删除留言评论
@@ -299,8 +323,8 @@ class ArticleRepository
         }
         $msg = array_flip(array_flip($msg));
         shuffle($msg);
-        if (count($msg)>16){
-            $res1 = array_slice($msg,0,16);
+        if (count($msg)>10){
+            $res1 = array_slice($msg,0,10);
             return $res1;
         }
         return $msg;
@@ -367,5 +391,24 @@ class ArticleRepository
             }
         }
         return $brief;
+    }
+    //显示评论
+    public function showComment($id){
+        $res = $this->comment->where([
+            'aid' => $id
+        ])->get()->toArray();
+        $arr = [];
+        if (empty($res)){
+            return false;
+        }else{
+            foreach ($res as $k){
+                $arr[] = [
+                    'userName' => $k['userName'],
+                    'content' => $k['content'],
+                    'date' => $k['updated_at'],
+                ];
+            }
+            return $arr;
+        }
     }
 }

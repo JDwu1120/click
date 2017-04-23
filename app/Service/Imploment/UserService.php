@@ -13,8 +13,9 @@ use App\Service\UserInterface;
 use App\Models\Article;
 class UserService implements UserInterface
 {
-    public $log;
-    public $usr;
+    private $log;
+    private $usr;
+    private $art;
     /**
      * UserService constructor.
      */
@@ -22,6 +23,7 @@ class UserService implements UserInterface
     {
         $this->log = new LoginService();
         $this->usr = new UserRepository();
+        $this->art = new ArticleRepository();
     }
     /*
      * 储存文章
@@ -107,16 +109,11 @@ class UserService implements UserInterface
     /*
      * 留言评论
      */
-    public function comment($aid,$userName,$content,$power)
+    public function comment($aid,$userName,$content,$power,$token)
     {
         // TODO: Implement comment() method.
-            $res = ArticleRepository::comment($aid,$userName,$content,$power);
-            if ($res){
-                $mes = $res;
-            }else{
-                $mes = '评论失败';
-            }
-        return $mes;
+        $res = $this->art->comment($aid,$userName,$content,$power,$token);
+        return $res;
     }
     public function delComment($id, $aid, $userName)
     {
