@@ -16,11 +16,11 @@ class AutoCheckLogin
      */
     public function handle($request, Closure $next)
     {
-        $token = $request->input('token');
-        $user = new LoginService();
-        if ($user->checkLog($token)){
+//        $token = $request->input('token');
+//        $user = new LoginService();
+//        if ($user->checkLog($token)){
             return $next($request);
-        }
-        exit('清先登录');
+//        }
+//        exit('清先登录');
     }
 }

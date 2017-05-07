@@ -100,6 +100,12 @@ class ArticleRepository
             'id' => $id
         ])->get()->toArray();
         return $res[0];
+        /*
+         * 文章右侧显示坐着的一些信息
+         */
+//        $user = $this->user->where([
+//            'userName' => $res[0]
+//        ])
     }
     /*
      * 删除指定文章
