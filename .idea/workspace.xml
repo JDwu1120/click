@@ -3,14 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="eb7a4e8b-ab3f-4bb0-9a1a-0cc700bea731" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Controllers/UserController.php" afterPath="$PROJECT_DIR$/app/Http/Controllers/UserController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Middleware/AutoCheckLogin.php" afterPath="$PROJECT_DIR$/app/Http/Middleware/AutoCheckLogin.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/Middleware/VerifyCsrfToken.php" afterPath="$PROJECT_DIR$/app/Http/Middleware/VerifyCsrfToken.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Http/routes.php" afterPath="$PROJECT_DIR$/app/Http/routes.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Repositories/ArticleRepository.php" afterPath="$PROJECT_DIR$/app/Repositories/ArticleRepository.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Repositories/UserRepository.php" afterPath="$PROJECT_DIR$/app/Repositories/UserRepository.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/Service/Imploment/UserService.php" afterPath="$PROJECT_DIR$/app/Service/Imploment/UserService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/dto/feedback.php" afterPath="$PROJECT_DIR$/app/dto/feedback.php" />
     </list>
     <ignored path="click.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -267,6 +259,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
@@ -453,7 +446,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1070,11 +1062,13 @@
       <workItem from="1492950829978" duration="10048000" />
       <workItem from="1493197706962" duration="14000" />
       <workItem from="1494159390666" duration="13468000" />
+      <workItem from="1494176533477" duration="99000" />
+      <workItem from="1494176654684" duration="2000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="188689000" />
+    <option name="totallyTimeSpent" value="188790000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="807" extended-state="6" />
