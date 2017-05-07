@@ -172,10 +172,10 @@ class UserService implements UserInterface
      */
     public function showUserMsg($user_id){
         try {
-            dd($user_id);
             $userName = UserInfo::where([
                 'id' => $user_id
             ])->get()->toArray()[0]['userName'];
+            dd($userName);
             $res = $this->usr->showUserMsg($userName);
             if ($res!=null){
                 return $res;
