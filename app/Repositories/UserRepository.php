@@ -7,6 +7,9 @@
  * Time: 17:07
  */
 namespace App\Repositories;
+use App\Models\Article;
+use App\Models\Comment;
+use App\Models\Reply;
 use App\Models\UserInfo;
 class UserRepository
 {
@@ -15,9 +18,15 @@ class UserRepository
      * UserRepository constructor.
      */
     private $userInfo;
+    private $com;
+    private $rep;
+    private $art;
     public function __construct()
     {
         $this->userInfo = new UserInfo();
+        $this->com = new Comment();
+        $this->rep = new Reply();
+        $this->art = new Article();
     }
     public function saveUserInfo($data){
         $res = $this->userInfo->create([
@@ -117,5 +126,66 @@ class UserRepository
         }else{
             return false;
         }
+    }
+    //用户点赞
+    public function agreeComs($id){
+        $res = $this->com->where([
+            'id' => $id
+        ])->increment('agree',1);
+        return $res;
+    }
+    //评论回复
+    public function reply($aid,$cid,$content,$userName){
+        $res = $this->rep->create([
+            'aid' => $aid,
+            'cid' => $cid,
+            'content' => $content,
+            'userName' => $userName
+        ]);
+        if ($res['incrementing']){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    //显示用户信息
+    public function showUserMsg($userName){
+        $users = $this->userInfo->where([
+            'userName' => $userName,
+        ])->get()->toArray()[0];
+        $com = $this->com->where([
+            'userName' => $userName
+        ])->count();
+        $rep = $this->rep->where([
+            'userName' => $userName
+        ])->count();
+        $arg = $this->art->where([
+            'userName' => $userName
+        ])->get()->toArray();
+        $retArt = [];
+        foreach ($arg as $good_art) {
+            $com_num = $this->com->where([
+                'aid' => $good_art['id'],
+            ])->count();
+            $retArt[] = [
+                'id' => $good_art['id'],
+                'name' => $good_art['title'],
+                'category' => $good_art['category'],
+                'views' => $good_art['views'],
+                'created_at'=> $good_art['created_at'],
+                'art_com' => $com_num
+            ];
+        }
+        $user = [
+              "userName" => $users['userName'],
+              "nickName" => $users['nickName'],
+              "email" => $users['email'],
+              "phone" => $users['phone'],
+              "created_at" => $users['created_at']
+        ];
+        $user['com_num'] = $com;
+        $user['rep_num'] = $rep;
+        $user['art'] = $retArt;
+        return $user;
     }
 }

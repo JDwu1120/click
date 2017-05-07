@@ -37,6 +37,9 @@ Route::group(['middleware'=>'ajaxPermission'],function (){
         Route::any('comment',['uses' => 'UserController@comment']);
         Route::any('delComment',['uses' => 'UserController@delComment']);
         Route::any('getInfo',['uses' => 'UserController@getInfo']);
+        Route::any('agreeComs',['uses' => 'UserController@agreeComs']);
+        Route::any('reply',['uses' => 'UserController@reply']);
+        Route::any('showUserMsg',['uses' => 'UserController@showUserMsg']);
     });
     Route::any('verifySend','MailController@verifySend');
     Route::any('userRegister','RegisterController@userRegister');

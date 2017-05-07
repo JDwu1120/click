@@ -11,8 +11,8 @@ namespace App\dto;
 
 class feedback
 {
-    private $status;
-    private $data;
+    public $status;
+    public $data;
 
     /**
      * feedback constructor.

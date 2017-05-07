@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\dto\feedback;
 use App\Service\Imploment\LoginService;
 use Closure;
 
@@ -21,6 +22,7 @@ class AutoCheckLogin
 //        if ($user->checkLog($token)){
             return $next($request);
 //        }
-//        exit('清先登录');
+//        $msg = new feedback(0,'清先登录');
+//        return json_encode($msg);
     }
 }

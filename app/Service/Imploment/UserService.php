@@ -7,10 +7,11 @@
  * Time: 17:13
  */
 namespace App\Service\Imploment;
+use App\Models\UserInfo;
 use App\Repositories\ArticleRepository;
 use App\Repositories\UserRepository;
 use App\Service\UserInterface;
-use App\Models\Article;
+
 class UserService implements UserInterface
 {
     private $log;
@@ -134,6 +135,56 @@ class UserService implements UserInterface
         }else{
             return false;
         }
+    }
+    /*
+     * 点赞
+     */
+    public function agreeComs($token,$id){
+        if ($this->log->checkLog($token)){
+            if ($this->usr->agreeComs($id)){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+    /*
+     * 评论回复
+     */
+    public function reply($aid,$cid,$content,$token){
+        if ($this->log->checkLog($token)){
+            $userName = UserInfo::where([
+                'token' => $token
+            ])->get()->toArray()[0]['userName'];
+            if ($this->usr->reply($aid,$cid,$content,$userName)){
+                return 1;
+            }else{
+                return 0;
+            }
+        }else{
+            return false;
+        }
+    }
+    /*
+     * 用户的信息
+     */
+    public function showUserMsg($user_id){
+        try {
+            $userName = UserInfo::where([
+                'id' => $user_id
+            ])->get()->toArray()[0]['userName'];
+            $res = $this->usr->showUserMsg($userName);
+            if ($res!=null){
+                return $res;
+            }else{
+                return 0;
+            }
+        }catch (\Exception $e){
+            return null;
+        }
+
     }
 }
 

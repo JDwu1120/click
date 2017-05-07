@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 
+use App\dto\feedback;
 use App\dto\Operate;
 use App\Service\Imploment\ArticleService;
 use App\Service\Imploment\UserService;
@@ -169,6 +170,44 @@ class UserController extends Controller
         }else{
             $msg = new Operate(true,'',0,$info);
         }
+        return json_encode($msg);
+    }
+    /*
+     * 用户对评论进行点赞
+     */
+    public function agreeComs(Request $request){
+        $token = $request->input('token');
+        $id = $request->input('id');
+        $res = $this->usr->agreeComs($token,$id);
+        if (!$res){
+            $msg = new feedback(0,'点赞失败，出现未知错误');
+            return json_encode($msg);
+        }
+    }
+    /*
+     * 评论回复
+     */
+    public function reply(Request $request){
+        $aid = $request->input('aid');
+        $cid = $request->input('cid');
+        $content = $request->input('content');
+        $token = $request->input('token');
+        $res = $this->usr->reply($aid,$cid,$content,$token);
+        if ($res){
+            $msg = new feedback(1,"评论成功");
+            return json_encode($msg);
+        }else{
+            $msg = new feedback(0,"评论失败");
+            return json_encode($msg);
+        }
+    }
+    /*
+     * 显示用户信息页
+     */
+    public function showUserMsg(Request $request){
+        $user_id = $request->input('id');
+        $res = $this->usr->showUserMsg($user_id);
+        $msg = new feedback(1,$res);
         return json_encode($msg);
     }
 }

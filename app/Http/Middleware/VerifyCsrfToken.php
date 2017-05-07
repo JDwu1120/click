@@ -29,6 +29,8 @@ class VerifyCsrfToken extends BaseVerifier
         'userRegister',
         'userLogin',
         'viewArticle',
-        'comment'
+        'comment',
+        'showUserMsg',
+        'agreeComs'
     ];
 }

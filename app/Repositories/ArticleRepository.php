@@ -94,19 +94,40 @@ class ArticleRepository
     }
     /*
      * 显示指定文章
+     * 暂时不用
      */
-    public static function showOneArticle($id){
-        $res = Article::where([
-            'id' => $id
-        ])->get()->toArray();
-        return $res[0];
-        /*
-         * 文章右侧显示坐着的一些信息
-         */
-//        $user = $this->user->where([
-//            'userName' => $res[0]
-//        ])
-    }
+//    public static function showOneArticle($id){
+//        $res = Article::where([
+//            'id' => $id
+//        ])->get()->toArray()[0];
+//        /*
+//         * 文章右侧显示坐着的一些信息
+//         */
+//        $user = UserInfo::where([
+//            'userName' => $res['userName'],
+//        ])->get()->toArray()[0];
+//        $time = $user['created_at'];
+//        $arts = Article::where([
+//            'userName' => $res['userName']
+//        ])->count();
+//        $good_arts = Article::where([
+//            'userName' => $res['userName']
+//        ])->orderBy('views','desc')->limit(10)->get()->toArray();
+//        $retArt = [];
+//        foreach ($good_arts as $good_art) {
+//            $retArt[] = [
+//                'id' => $good_art['id'],
+//                'name' => $good_art['title'],
+//                'category' => $good_art['category'],
+//                'views' => $good_art['views']
+//            ];
+//        }
+//        $time = explode(" ",$time)[0];
+//        $res['age'] = $time;
+//        $res['nums'] = $arts;
+//        $res['good_art'] = $retArt;
+//        return $res;
+//    }
     /*
      * 删除指定文章
      */
@@ -146,8 +167,35 @@ class ArticleRepository
         ])->increment('views',1);
         $res = Article::where([
             'id' => $id
-        ])->get()->toArray();
-        return $res[0];
+        ])->get()->toArray()[0];
+        /*
+         * 文章右侧显示坐着的一些信息
+         */
+        $user = UserInfo::where([
+            'userName' => $res['userName'],
+        ])->get()->toArray()[0];
+        $time = $user['created_at'];
+        $arts = Article::where([
+            'userName' => $res['userName']
+        ])->count();
+        $good_arts = Article::where([
+            'userName' => $res['userName']
+        ])->orderBy('views','desc')->limit(10)->get()->toArray();
+        $retArt = [];
+        foreach ($good_arts as $good_art) {
+            $retArt[] = [
+                'id' => $good_art['id'],
+                'name' => $good_art['title'],
+                'category' => $good_art['category'],
+                'views' => $good_art['views']
+            ];
+        }
+        $time = explode(" ",$time)[0];
+        $res['user_id'] = $user['id'];
+        $res['age'] = $time;
+        $res['nums'] = $arts;
+        $res['good_art'] = $retArt;
+        return $res;
     }
     /*
      * 收藏文章
@@ -409,9 +457,11 @@ class ArticleRepository
         }else{
             foreach ($res as $k){
                 $arr[] = [
+                    'id' => $k['id'],
                     'userName' => $k['userName'],
                     'content' => $k['content'],
                     'date' => $k['updated_at'],
+                    'agree' => $k['agree']
                 ];
             }
             return $arr;
