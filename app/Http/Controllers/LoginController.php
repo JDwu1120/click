@@ -26,9 +26,7 @@ class LoginController extends Controller
         $token = $request->input('ticket');
         $utoken = $request->input('utoken');
         $info = $this->user->getUserInfo($token,$utoken);
-        setcookie("token",$info->data['token']);
-        setcookie("username",$info->data['username']);
-        return redirect("homepage");
+        return redirect("http://forum.clickgwas.org/cookie?token=".$info->data['token']."&"."username=".$info->data['username']);
     }
     //local Login
     public function localLogin(Request $request){
