@@ -28,7 +28,7 @@ class LoginController extends Controller
         $info = $this->user->getUserInfo($token,$utoken);
         $to = Cookie::make("token",$info->data['token']);
         $username = Cookie::make("username",$info->data['username']);
-        return redirect("homepage");
+        return response()->redirectTo("http://forum.click.org")->cookie($to);
     }
     //local Login
     public function localLogin(Request $request){
