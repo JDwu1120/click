@@ -26,9 +26,10 @@ class LoginController extends Controller
         $token = $request->input('ticket');
         $utoken = $request->input('utoken');
         $info = $this->user->getUserInfo($token,$utoken);
-        $to = Cookie::make("token",$info->data['token']);
-        $username = Cookie::make("username",$info->data['username']);
-        return response()->redirectTo("http://forum.click.org")->cookie($to);
+        dd($info);
+//        $to = Cookie::make("token",$info->data['token']);
+//        $username = Cookie::make("username",$info->data['username']);
+//        return response()->redirectTo("http://forum.click.org")->cookie($to);
     }
     //local Login
     public function localLogin(Request $request){
