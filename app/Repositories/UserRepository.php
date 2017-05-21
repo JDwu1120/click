@@ -68,8 +68,8 @@ class UserRepository
         $res = $this->userInfo->where([
             'token'=>$token,
         ])->get()->toArray();
-        if (!empty($res)&&$res[0]['token']!=0){
-            return $res;
+        if (!empty($res)&&$res[0]['token']!=null){
+            return 1;
         }else{
             return false;
         }
@@ -119,7 +119,7 @@ class UserRepository
             'userName' => $username,
             'token' => $token
         ])->update([
-            'token' => 0
+            'token' => null
         ]);
         if ($res){
             return true;
