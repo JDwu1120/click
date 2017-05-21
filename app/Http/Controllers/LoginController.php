@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Service\Imploment\LoginService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 
 class LoginController extends Controller
 {
@@ -25,7 +26,9 @@ class LoginController extends Controller
         $token = $request->input('ticket');
         $utoken = $request->input('utoken');
         $info = $this->user->getUserInfo($token,$utoken);
-        return redirect('http://localhost:80003?'.$info['token']);
+        $to = Cookie::make("token",$info->data['token']);
+        $username = Cookie::make("username",$info->data['username']);
+        return redirect("homepage");
     }
     //local Login
     public function localLogin(Request $request){
