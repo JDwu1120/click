@@ -31,12 +31,12 @@ class mailService
         $auth = Auth::config($AccessKeyId, $AccessSecret);
         $mail = new Single();
         $mail->setAccountName('messenger@dm.clickgwas.org');
-        $mail->setFromAlias('wujindong');
+        $mail->setFromAlias('Clickgwas');
         $mail->setReplyToAddress('true');
         $mail->setAddressType('1');
         $mail->setToAddress($this->email);
-        $mail->setSubject('欢迎您使用我们的论坛，请输入以下验证码完成注册');
-        $mail->setHtmlBody('您的验证码为'.$this->verify);
+        $mail->setSubject('Welcome to the Click community');
+        $mail->setHtmlBody('Your CAPTCHA is'.$this->verify);
         $send = $mail->send();
         $send = json_decode($send,true);
         if (count($send)<3){
